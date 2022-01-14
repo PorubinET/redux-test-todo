@@ -27,13 +27,13 @@ function TaskInput() {
     const dispatch = useDispatch();
 
     const handleChange = (e) => {
-        setTextComment(e.target.value)
+        setTextComment(e.target.value = e.target.value.replace(/ +/g, ' '))
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const originalTasks = textComment;
-        if(textComment === ' '){
+        if(textComment === ''){
             alert('Заполните поле')
         }
         else{
@@ -47,7 +47,8 @@ function TaskInput() {
             const datadb = await getTasks()
             const lastTask = datadb.data[datadb.data.length - 1]
             dispatch(inputCreate(lastTask.task, lastTask._id, false))
-        }        
+        }
+        setTextComment(e.target.value = "")
     };
 
     useEffect(() => {
@@ -94,7 +95,7 @@ function TaskInput() {
                     {tasks.map((task) => (
                         <TaskItem 
                             task={task.text}
-                            done={task.done}
+                            // done={task.done}
                             key={task.id}
                             id={task.id}
                             // taskInput={task.task}

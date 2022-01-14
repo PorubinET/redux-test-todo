@@ -18,7 +18,6 @@ export const itemsReducer = (state = initialState, action) => {
                 ...state, // через оператор ... разворачиваем копируем и возвращаем новый state
                 tasks: [...state.tasks, action.data]
             }
-
         case INPUT_LOAD:
             const commentsNew = action.data.map(res => {
                 return {
@@ -30,63 +29,110 @@ export const itemsReducer = (state = initialState, action) => {
             return {
                 ...state, // через оператор ... разворачиваем, копируем и возвращаем новый state
                 tasks: commentsNew
-            }
+            }    
             
+            
+
+
+
+
         case INPUT_COMPLETED:
             return (() => {
-                const { data } = action;
                 const { id } = action;
                 const { tasks } = state;
-                const itemIndex = tasks.findIndex(res => res.id === data.id)
+                const currentTask = tasks.find(res => res.id === id)
+                    console.log(currentTask, "currentTask<<<<<")
+                    console.log(tasks, "tasks<<<<")
+                    console.log(id, "id<<<<<")
                 const nextTasks = [
-                    console.log(...tasks, itemIndex)
-                    // ...tasks.find(itemIndex),
-                    // data,
-                    // ...tasks.done = true
+                    currentTask.done = !currentTask.done
                 ];
-                    // console.log(itemIndex)
-                // const nextComments = [
-                //     ...tasks.slice(0, itemIndex),
-                //     ...tasks.slice(itemIndex + 1)
-                // ];
+                    console.log(nextTasks, "nextTasks<<<<<")
                 return {
                     ...state, // через оператор ... разворачиваем копируем и возвращаем новый state
-                    // tasks: nextTasks
+                    tasks: [...state.tasks]
                 }
             })();
 
+
+            case INPUT_DELETE:
+                return (() => {
+                    const { id } = action;
+                    console.log(id, "id<<<")
+                    const { tasks } = state;
+                    const itemIndex = tasks.findIndex(res => res.id === id)
+                    const nextComments = [
+                        ...tasks.slice(0, itemIndex),
+                        ...tasks.slice(itemIndex + 1)
+                    ];
+                    return {
+                        ...state, // через оператор ... разворачиваем копируем и возвращаем новый state
+                        tasks: nextComments
+                    }
+                })(); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         case INPUT_UPDATE:
             const { data } = action;
+            // const { id } = action;
             const { tasks } = state;
             const itemIndex = tasks.findIndex(res => res.id === data.id)
+            console.log(data, "data<<<<")
+            console.log(tasks, "tasks<<<<")
+            console.log(itemIndex, "itemIndex<<<<")
+            // console.log(nextTasks, "nextTasks <<<<")
 
+            // console.log(data, "data<<<<")
+            // console.log(tasks, 'tasks<<<<')
+            // console.log(data.text)
+
+            // let text = "1q1" + data.text.trim();
+            // let id = data.id;
+            // const newData = { text, id }
             const nextTasks = [
                 ...tasks.slice(0, itemIndex),
                 data,
                 ...tasks.slice(itemIndex + 1)
-            ];
-
+            ]; 
             return {
                 ...state, // через оператор ... разворачиваем, копируем и возвращаем новый state
                 tasks: nextTasks
             }
 
-        case INPUT_DELETE:
-            return (() => {
-                const { id } = action;
-                const { tasks } = state;
-                const itemIndex = tasks.findIndex(res => res.id === id)
-                const nextComments = [
-                    ...tasks.slice(0, itemIndex),
-                    ...tasks.slice(itemIndex + 1)
-                ];
-                return {
-                    ...state, // через оператор ... разворачиваем копируем и возвращаем новый state
-                    tasks: nextComments
-                }
-            })();
-
-        
+          
         default:
             return state;
     }

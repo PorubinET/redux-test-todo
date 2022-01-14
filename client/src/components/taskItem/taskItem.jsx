@@ -5,17 +5,18 @@ import { inputDelete, inputUpdate, inputCompleted } from "../../redux/actions";
 import './taskItem.css';
 
 import {
+    updateTask,
+    deleteTask,
     // addTask,
     // getTasks,
-    updateTask,
     // updateTasks,
-    deleteTask,
     // deleteAll
 } from "../../services/taskServices";
 
 
 function TaskItem(props){
     const [input, setInput] = useState('')
+    // const [check, setCheck] = useState(true)
     const {task, id} = props
     const dispatch = useDispatch();
 
@@ -24,24 +25,6 @@ function TaskItem(props){
         const { itemsReducer } = state;
         return itemsReducer.tasks;
     })
-
-    const handleUpdateInput = async (e) => {
-        e.preventDefault();
-        if(!input) {
-            setInput({ 
-                task: input     
-            })
-        } 
-        else{
-            try {
-                await updateTask(id, {task: input.trim() });
-                setInput({task: task.trim()});
-            } catch (error) {
-                console.log(error);
-            }
-            dispatch(inputUpdate(task, id))
-        } 
-    };
 
     const handleDelete = async (e) => {
         e.preventDefault();
@@ -53,36 +36,46 @@ function TaskItem(props){
         }
         dispatch(inputDelete(id))
     };
-
-    const handleCheck = (e) => {
-        dispatch(inputCompleted(id))
-    }
-
-    useEffect(() => {
-        if (task) {
-            setInput(task)
-        }
-    },[task])
-
-    const handleInput = (e) => {
-        setInput(e.target.value)
-    }
-
-    // console.log('input >', input)
-
     
 
     const onFocus = (e) => {e.currentTarget.classList.add("to-do__text-active")}
-    const onBlur = (e) => {e.currentTarget.classList.remove("to-do__text-active")}
+    const onBlur = (e) => {e.currentTarget.classList.remove("to-do__text-active")} 
 
-    // const handleKeyDown = (e) => {
-    //     if(e.keyCode === 13){
-    //         this.handleUpdateInput(e)
-    //         e.currentTarget.setAttribute("readonly", "true")
-    //         e.currentTarget.classList.remove("to-do__text-active");
-    //         // console.log(!this.state.currentTask.length)
-    //     }    
-    // }
+    
+    const handleKeyDown = (e) => {
+        if(e.keyCode === 13){
+            handleUpdateInput(e)
+            e.currentTarget.setAttribute("readonly", "true")
+            e.currentTarget.classList.remove("to-do__text-active");
+        }    
+    }
+    
+    const handleInput = (e) => {
+        setInput(e.target.value = e.target.value.replace(/ +/g, ' '))
+    }
+
+    const handleUpdateInput = async (e) => {
+        e.preventDefault();
+        if(!input) {
+            setInput(e.target.value = props.task);
+            console.log(input, "input<<<<<<<<")
+        } 
+        else{
+            try {
+                await updateTask(id, {task: input.trim() });
+                setInput({task: task.trim()});
+                // dispatch(inputUpdate(task, id))
+            } catch (error) {
+                console.log(error);
+            }  
+            dispatch(inputUpdate(task.trim(), id))
+        } 
+    };
+
+    const handleCheck = (e) => {
+        e.preventDefault();
+        dispatch(inputCompleted(id));
+    }
       
     const removeAttribute = (e) => {
         e.currentTarget.classList.add("to-do__text-active");
@@ -91,11 +84,8 @@ function TaskItem(props){
 
     let classDone, classCheck, classActive;
         
-        // const {handleUpdate, handleDelete, task, id } = this.props;
-        // const {currentTask} = this.state
-        // const bla = complited.filter(item => item.done);
-        console.log(tasks.filter(item => item.done).length)
         const tasksComplited = tasks.filter(item => item.done).length;
+        console.log(tasksComplited)
 
         if(tasksComplited){
           classDone = "to-do__text to-do__done";
@@ -106,7 +96,13 @@ function TaskItem(props){
             classCheck = "to-do__checkbox";
             classActive = "to-do__checkbox-check";
         }  
-        
+    
+    useEffect(() => {
+        if (task) {
+            setInput(task)
+        }
+    },[task])
+
     return(
         <li className="to-do__list-li">
                 <label 
@@ -127,11 +123,11 @@ function TaskItem(props){
                         <input            
                             type="text" 
                             className={classDone}
-                            // onKeyDown={this.handleKeyDown}
+                            onKeyDown={handleKeyDown}
+                            // onDoubleClick={handleUpdateInput}
                             onFocus={onFocus}
                             onBlur={onBlur}      
-                            onClick={removeAttribute} 
-                            onDoubleClick={handleUpdateInput}                 
+                            onClick={removeAttribute}              
                             onChange={handleInput}
                             defaultValue={task}
                             id={id} 

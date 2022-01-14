@@ -36,10 +36,10 @@ export function inputText(text) {
     }
 }
 
-export function inputUpdate(text, id) {
+export function inputUpdate(text, id, done) {
     return {
         type: INPUT_UPDATE,
-        data: { text, id }
+        data: { text, id, done}
     }
 }
 
